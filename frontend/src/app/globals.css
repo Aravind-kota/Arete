@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+:root {
+  /* Primary Colors */
+  --marble-white: #F6F4F1;
+  --aegean-blue: #1E3A8A; /* Updated to Primary Dark Blue */
+  --bronze-gold: #B08D57;
+
+  /* Secondary / Accents */
+  --charcoal-ink: #1C1C1C;
+  --stone-grey: #9A9A9A;
+  --olive-accent: #2D9183; /* Updated to Accent Teal */
+
+  --background: var(--marble-white);
+  --foreground: var(--charcoal-ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  --color-marble-white: var(--marble-white);
+  --color-aegean-blue: var(--aegean-blue);
+  --color-bronze-gold: var(--bronze-gold);
+  --color-charcoal-ink: var(--charcoal-ink);
+  --color-stone-grey: var(--stone-grey);
+  --color-olive-accent: var(--olive-accent);
+
+  --font-sans: var(--font-inter);
+  --font-serif-heading: var(--font-cinzel);
+  --font-serif-sub: var(--font-playfair);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a; /* Or a dark variant of Aegean Blue if preferred, sticking to standard dark for now or user request? User said "sleek dark modes". */
+    /* Let's define a rich dark mode background */
+    --background: #111827; /* Rich dark gray/blue */
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif-heading), serif;
+  letter-spacing: 0.05em; /* Wider letter spacing for headings as requested */
+}
