@@ -7,7 +7,6 @@ async function fetchCollectionProducts(categorySlug: string, limit: number = 6) 
     const response = await fetch(
       `${API_URL}/products?category=${categorySlug}&limit=${limit}`,
       { 
-        cache: 'no-store',
         next: { revalidate: 300 } // Revalidate every 5 minutes
       }
     );

@@ -7,7 +7,12 @@ async function bootstrap() {
   
   // Enable CORS for frontend
   app.enableCors({
-    origin: ['http://localhost:3001', 'http://localhost:3000'],
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      process.env.FRONTEND_URL, // Production URL from env
+      'https://arete-flax.vercel.app',         // Allow all Vercel previews/deployments
+    ].filter(Boolean),
     credentials: true,
   });
   
