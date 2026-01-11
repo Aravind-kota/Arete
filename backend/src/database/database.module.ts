@@ -29,8 +29,8 @@ import { ScrapeJob } from './entities/scrape-job.entity';
            // Replace the direct DB hostname with the IPv4-compatible pooler
            // We keep port 5432 for Session mode (compatible with TypeORM/Postgres logic)
            // or 6543 for Transaction mode. Using 5432 is safer for general compatibility unless configured otherwise.
-           // However, for this specific project in ap-northeast-1:
-           const poolerHost = 'aws-0-ap-northeast-1.pooler.supabase.com';
+           // For this specific project in ap-northeast-1:
+           const poolerHost = 'aws-1-ap-northeast-1.pooler.supabase.com';
            if (url.hostname !== poolerHost) {
               console.log(`Swapping hostname ${url.hostname} for IPv4 pooler ${poolerHost} to support Render.`);
               url.hostname = poolerHost;
