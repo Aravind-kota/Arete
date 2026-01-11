@@ -14,35 +14,39 @@ import { ScrapeJob } from './entities/scrape-job.entity';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => {
+      useFactory: (configService: ConfigService) => {
         const databaseUrl = configService.get<string>('DATABASE_URL');
         if (!databaseUrl) {
           throw new Error('DATABASE_URL is not defined');
         }
 
-        // Manually resolve hostname to IPv4 to avoid ENETUNREACH on Node 17+ (IPv6 preference)
         const url = new URL(databaseUrl);
-        const dns = await import('dns/promises');
-        try {
-          // family: 4 forces IPv4
-          const { address } = await dns.lookup(url.hostname, { family: 4 });
-          console.log(`Resolved database host ${url.hostname} to IPv4: ${address}`);
-          url.hostname = address;
-        } catch (error) {
-          console.error(`Failed to resolve IPv4 for ${url.hostname}, falling back to original URL. Error: ${error.message}`);
+        
+        // Render does not support IPv6, and Supabase direct connections are IPv6-only.
+        // We must use the Supabase Connection Pooler (Supavisor) which supports IPv4.
+        // Project Region: ap-northeast-1
+        if (url.hostname.includes('supabase.co')) {
+           // Replace the direct DB hostname with the IPv4-compatible pooler
+           // We keep port 5432 for Session mode (compatible with TypeORM/Postgres logic)
+           // or 6543 for Transaction mode. Using 5432 is safer for general compatibility unless configured otherwise.
+           // However, for this specific project in ap-northeast-1:
+           const poolerHost = 'aws-0-ap-northeast-1.pooler.supabase.com';
+           if (url.hostname !== poolerHost) {
+              console.log(`Swapping hostname ${url.hostname} for IPv4 pooler ${poolerHost} to support Render.`);
+              url.hostname = poolerHost;
+           }
         }
 
         return {
           type: 'postgres',
-          // Use the pooled DATABASE_URL (with resolved IP)
           url: url.toString(), 
           entities: [Navigation, NavigationGroup, NavigationItem, Category, ProductList, ProductDetail, ScrapeJob],
           // Supabase requires SSL [cite: 69]
           ssl: {
-            rejectUnauthorized: false, // Essential since we are connecting via IP now
+            rejectUnauthorized: false,
           },
           // Required to auto-create tables on Day 1 [cite: 91]
-          synchronize: true,
+          synchronize: true, 
         };
       },
     }),
