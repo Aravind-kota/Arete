@@ -1,6 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import * as dns from 'node:dns';
+
+// Force usage of IPv4 for DNS resolution to avoid connection issues on some networks (e.g., Mac, Render)
+// that favor IPv6 but don't fully support it or have routing issues.
+dns.setDefaultResultOrder('ipv4first');
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
