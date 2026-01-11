@@ -41,10 +41,10 @@ import { ScrapeJob } from './entities/scrape-job.entity';
           type: 'postgres',
           url: url.toString(), 
           entities: [Navigation, NavigationGroup, NavigationItem, Category, ProductList, ProductDetail, ScrapeJob],
-          // Supabase requires SSL [cite: 69]
-          ssl: {
-            rejectUnauthorized: false,
-          },
+          // Supabase/Cloud providers require SSL. Use DB_SSL env var to control this.
+          ssl: configService.get<string>('DB_SSL') === 'true' 
+            ? { rejectUnauthorized: false } 
+            : false,
           // Required to auto-create tables on Day 1 [cite: 91]
           synchronize: true, 
         };
